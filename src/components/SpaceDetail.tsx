@@ -30,7 +30,7 @@ const TIMELINE_EVENTS = [
         title: '🔥 大理古城火锅局',
         time: '2 小时前',
         status: 'Live',
-        cover: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        cover: 'https://images.unsplash.com/photo-1614104030967-5ca61a54247b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
         summary: '4人参与 · 支出 ¥480',
         type: 'event'
     },
@@ -52,8 +52,8 @@ const TIMELINE_EVENTS = [
         title: '老三生日快乐 🎂',
         time: '2025年 11月 12日',
         status: 'Archived',
-        cover: 'https://images.unsplash.com/photo-1530103862676-de3c9a59af57?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-        summary: 'KTV · 支出 ¥2,100',
+        cover: 'https://images.unsplash.com/photo-1623689046286-01d812cc8bad?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        summary: 'KTV · 支出 ¥300',
         type: 'milestone'
     }
 ];

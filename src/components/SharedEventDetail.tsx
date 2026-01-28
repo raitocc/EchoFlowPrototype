@@ -9,7 +9,7 @@ const HEADER_DATA = {
     title: '大理古城火锅局',
     total: 480,
     perPerson: 120,
-    cover: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    cover: 'https://images.unsplash.com/photo-1614104030967-5ca61a54247b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     members: [
         'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
         'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80',
@@ -25,7 +25,7 @@ const MESSAGES = [
         type: 'photo',
         isMe: false,
         content: {
-            image: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80'
+            image: 'https://images.unsplash.com/photo-1614104030967-5ca61a54247b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
         }
     },
     {

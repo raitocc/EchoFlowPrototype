@@ -23,7 +23,7 @@ const CAPSULE_DATA: CapsuleItem[] = [
     id: 'shared-1',
     title: '🔥 大理古城火锅局',
     subtitle: '进行中 · 4人在线',
-    coverUrl: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    coverUrl: 'https://images.unsplash.com/photo-1614104030967-5ca61a54247b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     engineType: 'Echo Space',
     stats: [
       { label: '总额', value: '¥482' },
