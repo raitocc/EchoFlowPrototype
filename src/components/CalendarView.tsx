@@ -44,7 +44,7 @@ export default function CalendarView({ data, onClose, onDateSelect }: CalendarVi
     // 2. Generate Calendar Grid for January 2026
     // Jan 1, 2026 is Thursday. 31 Days.
     const days = Array.from({ length: 31 }, (_, i) => i + 1);
-    const startOffset = 4; // Mon=0, Tue=1, Wed=2, Thu=3. Wait.
+    // const startOffset = 4; // Mon=0, Tue=1, Wed=2, Thu=3. Wait.
     // 2026-01-01 is Thursday.
     // If calendar starts on Sunday: Sun, Mon, Tue, Wed, Thu. 
     // 0, 1, 2, 3, 4. So 4 empty slots.

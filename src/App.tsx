@@ -13,7 +13,7 @@ import CapsuleDetail from './components/CapsuleDetail';
 import EchoSpaceView from './components/EchoSpaceView';
 import SharedEventDetail from './components/SharedEventDetail';
 import SpaceDetail from './components/SpaceDetail';
-import { CapsuleItem } from './components/CapsuleCard';
+import type { CapsuleItem } from './components/CapsuleCard';
 
 import FloatingActionButton from './components/FloatingActionButton';
 
@@ -228,9 +228,7 @@ function App() {
     setViewMode('shelf');
   };
 
-  const handleBackFromEchoSpace = () => {
-    setViewMode('home');
-  };
+
 
   const handleOpenEchoDetail = () => {
     setViewMode('echo_detail');

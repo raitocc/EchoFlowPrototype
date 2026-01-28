@@ -1,5 +1,5 @@
 import { X } from 'lucide-react';
-import CapsuleCard, { CapsuleItem } from './CapsuleCard';
+import CapsuleCard, { type CapsuleItem } from './CapsuleCard';
 
 interface CapsuleShelfProps {
     capsules: CapsuleItem[];

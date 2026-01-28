@@ -1,10 +1,4 @@
 import { Plus, Sparkles, MapPin, Clock } from 'lucide-react';
-import { useState } from 'react';
-import SharedEventDetail from './SharedEventDetail';
-
-interface EchoSpaceViewProps {
-    onBack: () => void;
-}
 
 // --- Mock Data ---
 const MOCK_SPACES = [
@@ -156,7 +150,7 @@ function EventCard({ item, onClick }: { item: typeof MOCK_EVENTS[0], onClick: ()
     );
 }
 
-export default function EchoSpaceView({ onBack, onOpenDetail, onOpenSpace }: { onBack: () => void, onOpenDetail: () => void, onOpenSpace: () => void }) {
+export default function EchoSpaceView({ onOpenDetail, onOpenSpace }: { onBack: () => void, onOpenDetail: () => void, onOpenSpace: () => void }) {
     // Determine whether to show detail or list
     // const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 

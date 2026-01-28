@@ -1,4 +1,4 @@
-import { ArrowLeft, Settings, Sparkles, Link2, Camera, Mic, Keyboard, History, Clock } from 'lucide-react';
+import { ArrowLeft, Settings, Sparkles, Link2, Camera, Mic, Keyboard, History } from 'lucide-react';
 
 interface SharedEventDetailProps {
     onBack: () => void;

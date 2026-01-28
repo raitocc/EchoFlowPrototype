@@ -1,4 +1,4 @@
-import { ArrowLeft, Settings, Flame, Wallet, MapPin, Plus, Clock, Camera } from 'lucide-react';
+import { ArrowLeft, Settings, Flame, Wallet, MapPin, Plus, Camera } from 'lucide-react';
 
 interface SpaceDetailProps {
     onBack: () => void;

@@ -1,5 +1,5 @@
 import { ArrowLeft, Sparkles, Share2 } from 'lucide-react';
-import { CapsuleItem } from './CapsuleCard';
+import type { CapsuleItem } from './CapsuleCard';
 
 interface CapsuleDetailProps {
     data: CapsuleItem;
