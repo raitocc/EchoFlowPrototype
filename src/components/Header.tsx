@@ -1,10 +1,16 @@
 import { Menu, Calendar } from 'lucide-react';
 
-export default function Header() {
+interface HeaderProps {
+    onCalendarClick?: () => void;
+}
+
+export default function Header({ onCalendarClick }: HeaderProps) {
     return (
         <header className="flex items-center justify-between py-6">
             {/* Menu Icon */}
-            <button className="text-text-main p-2 -ml-2 hover:bg-black/5 rounded-full transition-colors cursor-pointer">
+            <button
+                className="text-text-main p-2 -ml-2 hover:bg-black/5 rounded-full transition-colors cursor-pointer"
+            >
                 <Menu size={24} strokeWidth={2.5} />
             </button>
 
@@ -17,7 +23,10 @@ export default function Header() {
             </div>
 
             {/* Calendar Icon */}
-            <button className="text-text-main p-2 -mr-2 hover:bg-black/5 rounded-full transition-colors cursor-pointer">
+            <button
+                onClick={onCalendarClick}
+                className="text-text-main p-2 -mr-2 hover:bg-black/5 rounded-full transition-colors cursor-pointer"
+            >
                 <Calendar size={24} strokeWidth={2.5} />
             </button>
         </header>

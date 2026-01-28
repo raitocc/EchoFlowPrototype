@@ -15,6 +15,7 @@ export interface MemoryItem {
 
 interface MemoryCardProps {
     data: MemoryItem;
+    onClick?: () => void;
 }
 
 const MoodIcon = ({ mood }: { mood?: string }) => {
@@ -40,9 +41,12 @@ const CategoryIcon = ({ category }: { category?: string }) => {
     return null;
 }
 
-export default function MemoryCard({ data }: MemoryCardProps) {
+export default function MemoryCard({ data, onClick }: MemoryCardProps) {
     return (
-        <div className="bg-surface rounded-[1.5rem] shadow-[var(--shadow-float)] overflow-hidden mb-6 active:scale-[0.98] transition-transform duration-200 cursor-pointer border border-slate-50/50">
+        <div
+            onClick={onClick}
+            className="bg-surface rounded-[1.5rem] shadow-[var(--shadow-float)] overflow-hidden mb-6 active:scale-[0.98] transition-transform duration-200 cursor-pointer border border-slate-50/50"
+        >
             {/* Image Section */}
             {data.imageUrl && (
                 <div className="relative">
