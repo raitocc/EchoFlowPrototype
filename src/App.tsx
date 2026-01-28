@@ -11,6 +11,8 @@ import CalendarView from './components/CalendarView';
 import CapsuleShelf from './components/CapsuleShelf';
 import CapsuleDetail from './components/CapsuleDetail';
 import EchoSpaceView from './components/EchoSpaceView';
+import SharedEventDetail from './components/SharedEventDetail';
+import SpaceDetail from './components/SpaceDetail';
 import { CapsuleItem } from './components/CapsuleCard';
 
 import FloatingActionButton from './components/FloatingActionButton';
@@ -173,7 +175,7 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
 
   // Capsule State
-  const [viewMode, setViewMode] = useState<'home' | 'shelf' | 'capsule_detail' | 'echo_space'>('home');
+  const [viewMode, setViewMode] = useState<'home' | 'shelf' | 'capsule_detail' | 'echo_space' | 'echo_detail' | 'space_detail'>('home');
   const [activeCapsule, setActiveCapsule] = useState<CapsuleItem | null>(null);
 
   // Immersive Scrollbar State
@@ -214,7 +216,7 @@ function App() {
 
   const handleSelectCapsule = (capsule: CapsuleItem) => {
     if (capsule.engineType === 'Echo Space') {
-      setViewMode('echo_space');
+      setViewMode('echo_detail'); // Direct link to detail for Hotpot mock
     } else {
       setActiveCapsule(capsule);
       setViewMode('capsule_detail');
@@ -227,7 +229,27 @@ function App() {
   };
 
   const handleBackFromEchoSpace = () => {
-    setViewMode('shelf');
+    setViewMode('home');
+  };
+
+  const handleOpenEchoDetail = () => {
+    setViewMode('echo_detail');
+  };
+
+  const handleOpenSpaceDetail = () => {
+    setViewMode('space_detail');
+  };
+
+  const handleBackFromSpaceDetail = () => {
+    setViewMode('echo_space');
+  };
+
+  const handleBackFromEchoDetail = () => {
+    // If coming from space_detail, ideally we go back there, but for simple prototype we can check activeCapsule or simple logic
+    // For now, let's assume if we are deep linking, we go back to Echo Space root, OR check history (too complex for now)
+    // Let's just go back to Echo Space root for simplicity, or modify if needed.
+    // IMPROVEMENT: Check previous mode? For now, falling back to 'echo_space' is safe.
+    setViewMode('echo_space');
   };
 
   // Simulate Recording Process
@@ -333,9 +355,27 @@ function App() {
         {/* 3. Echo Space Tab */}
         <div className={`absolute inset-0 transition-opacity duration-300 ${viewMode === 'echo_space' ? 'opacity-100 z-10' : 'opacity-0 -z-10 pointer-events-none'}`}>
           {viewMode === 'echo_space' && (
-            <EchoSpaceView onBack={() => setViewMode('home')} />
+            <EchoSpaceView
+              onBack={() => setViewMode('home')}
+              onOpenDetail={handleOpenEchoDetail}
+              onOpenSpace={handleOpenSpaceDetail}
+            />
           )}
         </div>
+
+        {/* Detail Overlays */}
+        {viewMode === 'space_detail' && (
+          <SpaceDetail
+            onBack={handleBackFromSpaceDetail}
+            onOpenEvent={handleOpenEchoDetail}
+          />
+        )}
+
+        {viewMode === 'echo_detail' && (
+          <SharedEventDetail
+            onBack={handleBackFromEchoDetail}
+          />
+        )}
 
         {/* Detail Overlays */}
         {viewMode === 'capsule_detail' && activeCapsule && (

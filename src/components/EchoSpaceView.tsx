@@ -57,7 +57,7 @@ const MOCK_EVENTS = [
 ];
 
 // --- Sub-Components ---
-function SpaceItem({ name, avatar, isNew = false }: { name?: string, avatar?: string, isNew?: boolean }) {
+function SpaceItem({ name, avatar, isNew = false, onClick }: { name?: string, avatar?: string, isNew?: boolean, onClick?: () => void }) {
     if (isNew) {
         return (
             <button className="flex flex-col items-center gap-2 group">
@@ -69,7 +69,7 @@ function SpaceItem({ name, avatar, isNew = false }: { name?: string, avatar?: st
         );
     }
     return (
-        <button className="flex flex-col items-center gap-2 group">
+        <button onClick={onClick} className="flex flex-col items-center gap-2 group">
             <div className="w-16 h-16 rounded-full p-0.5 border border-slate-100 bg-white shadow-sm overflow-hidden group-active:scale-95 transition-transform">
                 <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" />
             </div>
@@ -156,14 +156,14 @@ function EventCard({ item, onClick }: { item: typeof MOCK_EVENTS[0], onClick: ()
     );
 }
 
-export default function EchoSpaceView({ onBack }: EchoSpaceViewProps) {
+export default function EchoSpaceView({ onBack, onOpenDetail, onOpenSpace }: { onBack: () => void, onOpenDetail: () => void, onOpenSpace: () => void }) {
     // Determine whether to show detail or list
-    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+    // const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
     // If an event is selected, render the detail view (which is the code we salvaged)
-    if (selectedEventId) {
-        return <SharedEventDetail onBack={() => setSelectedEventId(null)} />;
-    }
+    // if (selectedEventId) {
+    //    return <SharedEventDetail onBack={() => setSelectedEventId(null)} />;
+    // }
 
     return (
         <div className="absolute inset-0 z-[60] bg-canvas flex flex-col pt-10 pb-24 overflow-hidden animate-in fade-in duration-300">
@@ -181,7 +181,14 @@ export default function EchoSpaceView({ onBack }: EchoSpaceViewProps) {
                 <div className="flex items-start gap-6 min-w-max">
                     <SpaceItem isNew />
                     {MOCK_SPACES.map(space => (
-                        <SpaceItem key={space.id} name={space.name} avatar={space.avatar} />
+                        <SpaceItem
+                            key={space.id}
+                            name={space.name}
+                            avatar={space.avatar}
+                            onClick={() => {
+                                if (space.id === '1') onOpenSpace();
+                            }}
+                        />
                     ))}
                 </div>
             </div>
@@ -200,7 +207,7 @@ export default function EchoSpaceView({ onBack }: EchoSpaceViewProps) {
                             item={event}
                             onClick={() => {
                                 // Only the 'Hotpot' event (e1) links to the detailed mockup we have
-                                if (event.id === 'e1') setSelectedEventId('e1');
+                                if (event.id === 'e1') onOpenDetail();
                             }}
                         />
                     ))}
