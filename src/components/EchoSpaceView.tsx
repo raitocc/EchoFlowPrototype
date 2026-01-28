@@ -1,132 +1,216 @@
-import { ArrowLeft, RefreshCw, Activity, Upload, MoreHorizontal } from 'lucide-react';
+import { Plus, Sparkles, MapPin, Clock } from 'lucide-react';
 import { useState } from 'react';
-import SharedMemoryCard, { SharedItem } from './SharedMemoryCard';
-import PrivacyModal from './PrivacyModal';
+import SharedEventDetail from './SharedEventDetail';
 
 interface EchoSpaceViewProps {
     onBack: () => void;
 }
 
-// Mock Shared Data
-const SHARED_DATA: SharedItem[] = [
+// --- Mock Data ---
+const MOCK_SPACES = [
+    { id: '1', name: '404宿舍', avatar: 'https://images.unsplash.com/photo-1555126634-323283e090fa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' },
+    { id: '2', name: '家人群', avatar: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' },
+    { id: '3', name: '大理小队', avatar: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&q=80' },
+];
+
+const MOCK_EVENTS = [
     {
-        id: 's1',
-        user: { name: 'Lisa', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80', isMe: false },
-        type: 'video',
-        content: '锅底开啦！！快来下肉！🔥🔥',
-        mediaUrl: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?auto=format&fit=crop&w=600&q=80', // Hotpot Image simulating video
-        timestamp: '18:45'
+        id: 'e1',
+        title: '🔥 大理古城火锅局',
+        status: 'Live',
+        coverUrl: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        location: '大理 · 古城',
+        time: '进行中',
+        participants: [
+            'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&q=80',
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80'
+        ],
+        spaceId: '3'
     },
     {
-        id: 's2',
-        user: { name: 'Me', avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80', isMe: true },
-        type: 'photo',
-        content: '终于吃到心心念念的火锅啦！大家周末愉快 😋',
-        mediaUrl: 'https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=600&q=80',
-        amount: '参与 AA',
-        timestamp: '19:10'
+        id: 'e2',
+        title: '周末开黑夜',
+        status: 'Archived',
+        coverUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        location: '宿舍',
+        time: '2天前',
+        participants: [
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+            'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80'
+        ],
+        spaceId: '1'
     },
     {
-        id: 's3',
-        user: { name: 'System', avatar: '', isMe: false },
-        type: 'system',
-        content: 'Mike 支付了饮料费 ¥60.00，AA 账单已更新',
-        timestamp: '19:30'
-    },
-    {
-        id: 's4',
-        user: { name: 'Mike', avatar: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?auto=format&fit=crop&w=100&q=80', isMe: false },
-        type: 'photo',
-        content: '吃饱喝足，这家的冰粉也很绝！',
-        mediaUrl: 'https://images.unsplash.com/photo-1563583769065-c7911727e0f1?auto=format&fit=crop&w=600&q=80',
-        timestamp: '20:05'
+        id: 'e3',
+        title: '路边的奇妙偶遇',
+        status: 'Archived',
+        coverUrl: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+        location: '市中心',
+        time: '5天前',
+        participants: [
+            'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80',
+            'https://images.unsplash.com/photo-1527980965255-d3b416303d12?auto=format&fit=crop&w=100&q=80'
+        ],
+        spaceId: undefined // No specific space
     }
 ];
 
-export default function EchoSpaceView({ onBack }: EchoSpaceViewProps) {
-    const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+// --- Sub-Components ---
+function SpaceItem({ name, avatar, isNew = false }: { name?: string, avatar?: string, isNew?: boolean }) {
+    if (isNew) {
+        return (
+            <button className="flex flex-col items-center gap-2 group">
+                <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400 group-active:scale-95 transition-transform bg-white">
+                    <Plus size={24} />
+                </div>
+                <span className="text-xs text-text-muted font-medium">新建空间</span>
+            </button>
+        );
+    }
+    return (
+        <button className="flex flex-col items-center gap-2 group">
+            <div className="w-16 h-16 rounded-full p-0.5 border border-slate-100 bg-white shadow-sm overflow-hidden group-active:scale-95 transition-transform">
+                <img src={avatar} alt={name} className="w-full h-full rounded-full object-cover" />
+            </div>
+            <span className="text-xs text-text-main font-medium">{name}</span>
+        </button>
+    );
+}
+
+function InsightCard() {
+    return (
+        <div className="w-full p-4 rounded-2xl bg-gradient-to-r from-violet-50 to-indigo-50 border border-indigo-100 mb-6 flex items-center justify-between shadow-sm">
+            <div className="flex items-start gap-4">
+                <div className="mt-1 w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-indigo-500">
+                    <Sparkles size={20} fill="currentColor" className="opacity-80" />
+                </div>
+                <div>
+                    <h3 className="text-sm font-bold text-indigo-900 mb-1">发现记忆纠缠</h3>
+                    <p className="text-xs text-indigo-700/80 leading-relaxed max-w-[200px]">
+                        检测到你与 <strong>王小明</strong>、<strong>李华</strong> 共同经历了 3 个事件，建议归档为共建空间。
+                    </p>
+                </div>
+            </div>
+            <button className="px-4 py-2 bg-indigo-500 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-200 active:scale-95 transition-transform">
+                Merge
+            </button>
+        </div>
+    );
+}
+
+function EventCard({ item, onClick }: { item: typeof MOCK_EVENTS[0], onClick: () => void }) {
+    const isLive = item.status === 'Live';
+    const spaceName = MOCK_SPACES.find(s => s.id === item.spaceId)?.name;
 
     return (
-        <div className="absolute inset-0 z-[70] bg-slate-50 flex flex-col animate-in slide-in-from-right duration-300">
+        <div onClick={onClick} className="bg-white rounded-[1.5rem] shadow-sm border border-slate-100/50 overflow-hidden active:scale-[0.99] transition-transform relative">
+            {/* Space Badge */}
+            {spaceName && (
+                <div className="absolute top-4 right-4 z-10 px-2 py-1 bg-black/40 backdrop-blur-md rounded-lg text-[10px] text-white font-bold border border-white/20">
+                    {spaceName}
+                </div>
+            )}
 
-            {/* Header */}
-            <div className="px-6 py-6 pt-8 bg-white/80 backdrop-blur-md border-b border-slate-100 z-10 sticky top-0">
-                <div className="flex items-center justify-between mb-4">
-                    <button onClick={onBack} className="p-2 -ml-2 hover:bg-slate-100 rounded-full text-text-main transition-colors">
-                        <ArrowLeft size={24} />
-                    </button>
+            {/* Content Container */}
+            <div className="p-4">
+                {/* Header */}
+                <div className="flex items-center gap-2 mb-3">
+                    {isLive && (
+                        <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                    )}
+                    <h3 className="text-lg font-bold text-text-main leading-tight">{item.title}</h3>
+                </div>
 
-                    {/* Avatar Group */}
+                {/* Cover Image */}
+                <div className="w-full aspect-[16/9] rounded-2xl overflow-hidden mb-4 bg-slate-100 relative">
+                    <img src={item.coverUrl} className="w-full h-full object-cover" alt="cover" />
+                    {isLive && (
+                        <div className="absolute bottom-2 right-2 px-2 py-1 bg-rose-500 text-white text-[10px] font-bold rounded-lg shadow-lg">
+                            LIVE
+                        </div>
+                    )}
+                </div>
+
+                {/* Footer Info */}
+                <div className="flex items-center justify-between">
                     <div className="flex -space-x-2">
-                        {['Lisa', 'Me', 'Mike'].map((u, i) => (
-                            <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
-                                <img src={`https://images.unsplash.com/photo-${[1494790108377, 1535713875002, 1599566150163][i]}?auto=format&fit=crop&w=100&q=80`} className="w-full h-full object-cover" />
-                            </div>
+                        {item.participants.map((p, i) => (
+                            <img key={i} src={p} className="w-6 h-6 rounded-full border-2 border-white bg-slate-200 object-cover" />
                         ))}
-                        <div className="w-8 h-8 rounded-full border-2 border-white bg-slate-100 flex items-center justify-center text-[10px] text-text-muted font-bold">
-                            +1
+                    </div>
+
+                    <div className="flex items-center gap-3 text-xs text-text-muted">
+                        <div className="flex items-center gap-1">
+                            <Clock size={12} />
+                            <span>{item.time}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <MapPin size={12} />
+                            <span>{item.location}</span>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    );
+}
 
-                <div>
-                    <h1 className="text-2xl font-bold text-text-main">🔥 大学城火锅局</h1>
-                    {/* Smart Board */}
-                    <div className="inline-flex items-center gap-3 mt-2 px-3 py-1.5 bg-text-main text-white rounded-lg shadow-sm">
-                        <span className="text-xs font-medium opacity-80">总支出 ¥482</span>
-                        <div className="w-px h-3 bg-white/30" />
-                        <span className="text-xs font-bold">人均 ¥120</span>
-                    </div>
-                </div>
+export default function EchoSpaceView({ onBack }: EchoSpaceViewProps) {
+    // Determine whether to show detail or list
+    const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+
+    // If an event is selected, render the detail view (which is the code we salvaged)
+    if (selectedEventId) {
+        return <SharedEventDetail onBack={() => setSelectedEventId(null)} />;
+    }
+
+    return (
+        <div className="absolute inset-0 z-[60] bg-canvas flex flex-col pt-10 pb-24 overflow-hidden animate-in fade-in duration-300">
+
+            {/* Header */}
+            <div className="px-6 pb-4 flex items-center justify-between">
+                <h1 className="text-2xl font-bold text-text-main tracking-tight">共鸣 Space</h1>
+                <button className="w-10 h-10 rounded-full bg-white shadow-sm border border-slate-100 flex items-center justify-center text-text-main active:scale-90 transition-transform">
+                    <Plus size={20} />
+                </button>
             </div>
 
-            {/* Stream Body */}
-            <div className="flex-1 overflow-y-auto p-4 no-scrollbar">
-                <div className="columns-2 gap-4 space-y-4">
-                    {SHARED_DATA.map((item) => (
-                        <SharedMemoryCard key={item.id} data={item} />
+            {/* Zone A: Space Rail */}
+            <div className="w-full overflow-x-auto no-scrollbar pl-6 pr-6 pb-6 pt-2">
+                <div className="flex items-start gap-6 min-w-max">
+                    <SpaceItem isNew />
+                    {MOCK_SPACES.map(space => (
+                        <SpaceItem key={space.id} name={space.name} avatar={space.avatar} />
                     ))}
                 </div>
-                {/* Bottom Spacer */}
-                <div className="h-32" />
             </div>
 
-            {/* Bottom Action Bar */}
-            <div className="absolute bottom-0 left-0 right-0 p-6 pb-8 bg-gradient-to-t from-white via-white/90 to-transparent z-20 flex items-center gap-4">
+            {/* Zone B: Main Feed */}
+            <div className="flex-1 overflow-y-auto px-6 pb-32 no-scrollbar space-y-6">
 
-                {/* Import History */}
-                <button className="flex flex-col items-center gap-1 text-text-muted active:scale-90 transition-transform">
-                    <div className="w-12 h-12 bg-white border border-slate-200 shadow-sm rounded-full flex items-center justify-center">
-                        <Upload size={20} />
+                {/* AI Insight */}
+                <InsightCard />
+
+                {/* Events Stream */}
+                <div className="space-y-6">
+                    {MOCK_EVENTS.map(event => (
+                        <EventCard
+                            key={event.id}
+                            item={event}
+                            onClick={() => {
+                                // Only the 'Hotpot' event (e1) links to the detailed mockup we have
+                                if (event.id === 'e1') setSelectedEventId('e1');
+                            }}
+                        />
+                    ))}
+
+                    {/* Spacer for bottom dock */}
+                    <div className="h-10 text-center text-xs text-slate-300 font-medium">
+                        —— 所有的相遇都有回响 ——
                     </div>
-                    <span className="text-[10px] font-medium">导入</span>
-                </button>
-
-                {/* Core Sync Button */}
-                <button
-                    onClick={() => setShowPrivacyModal(true)}
-                    className="flex-1 h-14 bg-gradient-to-r from-[var(--color-primary-light)] to-[var(--color-primary)] rounded-full shadow-[0_8px_20px_rgba(99,102,241,0.3)] flex items-center justify-center gap-2 text-white font-bold text-lg active:scale-95 transition-transform"
-                >
-                    <RefreshCw size={24} className="animate-spin-slow" />
-                    Sync Shot
-                </button>
-
-                {/* Vibe */}
-                <button className="flex flex-col items-center gap-1 text-text-muted active:scale-90 transition-transform">
-                    <div className="w-12 h-12 bg-white border border-slate-200 shadow-sm rounded-full flex items-center justify-center">
-                        <Activity size={20} />
-                    </div>
-                    <span className="text-[10px] font-medium">氛围</span>
-                </button>
-
+                </div>
             </div>
-
-            {/* Modal */}
-            <PrivacyModal
-                isOpen={showPrivacyModal}
-                onClose={() => setShowPrivacyModal(false)}
-                onConfirm={() => setShowPrivacyModal(false)}
-            />
 
         </div>
     );
