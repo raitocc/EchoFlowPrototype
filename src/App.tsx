@@ -10,10 +10,26 @@ import CalendarView from './components/CalendarView';
 
 import CapsuleShelf from './components/CapsuleShelf';
 import CapsuleDetail from './components/CapsuleDetail';
+import EchoSpaceView from './components/EchoSpaceView';
 import { CapsuleItem } from './components/CapsuleCard';
+
+import FloatingActionButton from './components/FloatingActionButton';
 
 // --- MOCK DATA ---
 const CAPSULE_DATA: CapsuleItem[] = [
+  {
+    id: 'shared-1',
+    title: '🔥 大理古城火锅局',
+    subtitle: '进行中 · 4人在线',
+    coverUrl: 'https://images.unsplash.com/photo-1542345812-d98b5cd6cf98?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
+    engineType: 'Echo Space',
+    stats: [
+      { label: '总额', value: '¥482' },
+      { label: '人均', value: '¥120' },
+      { label: '状态', value: 'Live' }
+    ],
+    aiInsight: '正在同步...'
+  },
   {
     id: 'c1',
     title: '2026 大理漫游记',
@@ -54,6 +70,7 @@ const CAPSULE_DATA: CapsuleItem[] = [
     aiInsight: '你们平均每月聚餐不到 1 次，但每次聚会都要持续 3 小时以上。要不要约个时间再聚聚？'
   }
 ];
+
 const MOCK_DATA = [
   {
     date: { day: '28', month: '1月', year: '2026', weekday: 'WED / 星期三' },
@@ -156,7 +173,7 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
 
   // Capsule State
-  const [viewMode, setViewMode] = useState<'home' | 'shelf' | 'capsule_detail'>('home');
+  const [viewMode, setViewMode] = useState<'home' | 'shelf' | 'capsule_detail' | 'echo_space'>('home');
   const [activeCapsule, setActiveCapsule] = useState<CapsuleItem | null>(null);
 
   // Immersive Scrollbar State
@@ -188,22 +205,28 @@ function App() {
     }
   };
 
-  // Capsule Handlers
-  const handleOpenShelf = () => {
-    setViewMode('shelf');
-  };
-
-  const handleCloseShelf = () => {
-    setViewMode('home');
+  // Navigation Logic
+  const handleTabChange = (tab: 'home' | 'shelf' | 'echo_space') => {
+    setViewMode(tab);
+    // Clean up detail states when switching main tabs
+    if (tab !== 'shelf') setActiveCapsule(null);
   };
 
   const handleSelectCapsule = (capsule: CapsuleItem) => {
-    setActiveCapsule(capsule);
-    setViewMode('capsule_detail');
+    if (capsule.engineType === 'Echo Space') {
+      setViewMode('echo_space');
+    } else {
+      setActiveCapsule(capsule);
+      setViewMode('capsule_detail');
+    }
   };
 
   const handleBackFromCapsule = () => {
     setActiveCapsule(null);
+    setViewMode('shelf');
+  };
+
+  const handleBackFromEchoSpace = () => {
     setViewMode('shelf');
   };
 
@@ -232,8 +255,6 @@ function App() {
 
   // Update scroll label logic (Simplified for prototype)
   const handleScroll = () => {
-    // In a real app, logic would calculate which DateHeader is sticky/visible
-    // For prototype, we just alternate labels based on scroll depth or match top item
     if (!containerRef.current) return;
     const scrollTop = containerRef.current.scrollTop;
     if (scrollTop > 800) setCurrentDateLabel('2026 1月 (下旬)');
@@ -262,15 +283,61 @@ function App() {
           />
         )}
 
-        {/* Capsule Views */}
-        {viewMode === 'shelf' && (
-          <CapsuleShelf
-            capsules={CAPSULE_DATA}
-            onClose={handleCloseShelf}
-            onSelectCapsule={handleSelectCapsule}
-          />
+        {/* Floating Action Button (Global Record) - Only show on main views */}
+        {['home', 'shelf', 'echo_space'].includes(viewMode) && !activeMemory && !isRecording && (
+          <FloatingActionButton onClick={handleStartRecording} />
         )}
 
+        {/* 1. Main Home Feed */}
+        <div className={`absolute inset-0 transition-opacity duration-300 ${viewMode === 'home' ? 'opacity-100 z-10' : 'opacity-0 -z-10 pointer-events-none'}`}>
+          {/* Immersive Scrollbar & Feed Logic */}
+          <ImmersiveScrollbar containerRef={containerRef} currentLabel={currentDateLabel} />
+          <div
+            ref={containerRef}
+            onScroll={handleScroll}
+            className="flex-1 h-full overflow-y-auto w-full no-scrollbar relative pb-32 scroll-smooth"
+          >
+            <div className="px-6 pb-20">
+              <Header onCalendarClick={() => setShowCalendar(true)} />
+              <div className="mt-2">
+                {MOCK_DATA.map((dayGroup, index) => (
+                  <div
+                    key={index}
+                    id={`date-2026-01-${dayGroup.date.day.padStart(2, '0')}`}
+                    className="scroll-mt-24"
+                  >
+                    <DateHeader date={dayGroup.date} stats={{ summary: dayGroup.summary }} />
+                    <div className="space-y-6">
+                      {dayGroup.items.map(item => (
+                        <MemoryCard key={item.id} data={item} onClick={() => handleCardClick(item)} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Capsule Shelf Tab */}
+        <div className={`absolute inset-0 transition-opacity duration-300 ${viewMode === 'shelf' ? 'opacity-100 z-10' : 'opacity-0 -z-10 pointer-events-none'}`}>
+          {viewMode === 'shelf' && (
+            <CapsuleShelf
+              capsules={CAPSULE_DATA}
+              onClose={() => setViewMode('home')}
+              onSelectCapsule={handleSelectCapsule}
+            />
+          )}
+        </div>
+
+        {/* 3. Echo Space Tab */}
+        <div className={`absolute inset-0 transition-opacity duration-300 ${viewMode === 'echo_space' ? 'opacity-100 z-10' : 'opacity-0 -z-10 pointer-events-none'}`}>
+          {viewMode === 'echo_space' && (
+            <EchoSpaceView onBack={() => setViewMode('home')} />
+          )}
+        </div>
+
+        {/* Detail Overlays */}
         {viewMode === 'capsule_detail' && activeCapsule && (
           <CapsuleDetail
             data={activeCapsule}
@@ -278,73 +345,25 @@ function App() {
           />
         )}
 
-        {/* Render Either Detail Page or Home Feed */}
-        {activeMemory ? (
+        {/* Memory Detail Overlay */}
+        {activeMemory && (
           <MemoryDetail
             mode={memoryMode}
             data={activeMemory}
             onClose={handleCloseDetail}
           />
-        ) : (
-          <>
-            {/* Immersive Scrollbar */}
-            <ImmersiveScrollbar containerRef={containerRef} currentLabel={currentDateLabel} />
-
-            {/* Scrollable Content Area */}
-            <div
-              ref={containerRef}
-              onScroll={handleScroll}
-              className="flex-1 overflow-y-auto w-full no-scrollbar relative pb-32 scroll-smooth"
-            >
-
-              <div className="px-6 pb-20">
-                <Header onCalendarClick={() => setShowCalendar(true)} />
-
-                <div className="mt-2">
-                  {MOCK_DATA.map((dayGroup, index) => (
-                    <div
-                      key={index}
-                      id={`date-2026-01-${dayGroup.date.day.padStart(2, '0')}`}
-                      className="scroll-mt-24"
-                    >
-                      <DateHeader
-                        date={dayGroup.date}
-                        stats={{ summary: dayGroup.summary }}
-                      />
-
-                      <div className="space-y-6">
-                        {dayGroup.items.map(item => (
-                          <MemoryCard
-                            key={item.id}
-                            data={item}
-                            onClick={() => handleCardClick(item)}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            {/* Bottom Omni Dock (Fixed relative to the container) */}
-            <div className="absolute bottom-0 w-full z-50">
-              <OmniDock
-                onOmniClick={handleStartRecording}
-                activeTab={viewMode === 'home' ? 'home' : 'capsules'}
-                onTabChange={(tab) => {
-                  if (tab === 'home') setViewMode('home');
-                  else setViewMode('shelf');
-                }}
-              />
-              {/* Immersive Home Indicator Area */}
-              <div className="h-8 w-full flex justify-center items-end pb-2.5">
-                <div className="w-1/3 h-1.5 bg-slate-900/10 rounded-full backdrop-blur-3xl"></div>
-              </div>
-            </div>
-          </>
         )}
+
+        {/* Bottom Navigation */}
+        <OmniDock
+          activeTab={['home', 'shelf', 'echo_space'].includes(viewMode) ? (viewMode as any) : 'shelf'}
+          onTabChange={handleTabChange}
+        />
+
+        {/* Home Indicator */}
+        <div className="absolute bottom-1 left-0 right-0 z-[60] flex justify-center pointer-events-none">
+          <div className="w-1/3 h-1.5 bg-slate-900/10 rounded-full backdrop-blur-3xl"></div>
+        </div>
 
       </div>
     </div>

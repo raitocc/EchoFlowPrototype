@@ -21,7 +21,7 @@ export default function MemoryDetail({ mode, data, onClose }: MemoryDetailProps)
     const hasImage = data.type === 'visual' && data.imageUrl;
 
     return (
-        <div className="flex flex-col h-full bg-canvas relative overscroll-none">
+        <div className="absolute inset-0 z-[70] flex flex-col h-full bg-canvas overscroll-none animate-in slide-in-from-bottom-10 duration-300">
 
             {/* 1. Navbar */}
             <div className={`absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-6 pt-12 transition-colors ${hasImage ? 'text-white' : 'text-text-main'}`}>

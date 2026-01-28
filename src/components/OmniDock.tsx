@@ -1,43 +1,39 @@
-import { Mic, Home, LayoutGrid } from 'lucide-react';
+import { Home, LayoutGrid, Users } from 'lucide-react';
 
 interface OmniDockProps {
-    onOmniClick?: () => void;
-    activeTab?: 'home' | 'capsules';
-    onTabChange?: (tab: 'home' | 'capsules') => void;
+    activeTab: 'home' | 'shelf' | 'echo_space';
+    onTabChange: (tab: 'home' | 'shelf' | 'echo_space') => void;
 }
 
-export default function OmniDock({ onOmniClick, activeTab = 'home', onTabChange }: OmniDockProps) {
+export default function OmniDock({ activeTab, onTabChange }: OmniDockProps) {
+    const tabs = [
+        { id: 'home' as const, icon: Home, label: '首页' },
+        { id: 'shelf' as const, icon: LayoutGrid, label: '胶囊' },
+        { id: 'echo_space' as const, icon: Users, label: '共鸣' },
+    ];
+
     return (
-        <div className="absolute bottom-0 left-0 right-0 z-50 pointer-events-none flex justify-center pb-8 pt-12 bg-gradient-to-t from-[var(--color-canvas)] via-[var(--color-canvas)]/90 to-transparent">
-            <div className="pointer-events-auto flex items-center justify-between px-8 py-2 rounded-full bg-surface/80 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/40 gap-8 transition-all duration-300 hover:scale-[1.02]">
+        <div className="absolute bottom-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-xl border-t border-slate-200/50 pb-8 pt-2">
+            <div className="flex justify-around items-center px-4">
+                {tabs.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    const Icon = tab.icon;
 
-                {/* Left Action: Home */}
-                <button
-                    onClick={() => onTabChange?.('home')}
-                    className={`p-3 rounded-full transition-colors active:scale-90 duration-200 ${activeTab === 'home' ? 'text-primary bg-primary/10' : 'text-text-muted hover:bg-slate-100'}`}
-                >
-                    <Home size={24} strokeWidth={activeTab === 'home' ? 3 : 2.5} />
-                </button>
-
-                {/* Center: Omni-Orb (Voice Input) */}
-                <button
-                    onClick={onOmniClick}
-                    className="relative group -mt-10"
-                >
-                    <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500 animate-pulse"></div>
-                    <div className="relative w-16 h-16 rounded-full bg-gradient-to-tr from-[var(--color-primary-light)] to-[var(--color-primary)] shadow-[0_10px_20px_rgba(99,102,241,0.3)] flex items-center justify-center text-white transition-transform duration-300 group-hover:-translate-y-1 group-active:scale-95 border-2 border-white/20">
-                        <Mic size={28} />
-                    </div>
-                </button>
-
-                {/* Right Action: Capsules (Assets) */}
-                <button
-                    onClick={() => onTabChange?.('capsules')}
-                    className={`p-3 rounded-full transition-colors active:scale-90 duration-200 ${activeTab === 'capsules' ? 'text-primary bg-primary/10' : 'text-text-muted hover:bg-slate-100'}`}
-                >
-                    <LayoutGrid size={24} strokeWidth={activeTab === 'capsules' ? 3 : 2.5} />
-                </button>
-
+                    return (
+                        <button
+                            key={tab.id}
+                            onClick={() => onTabChange(tab.id)}
+                            className="flex-1 flex flex-col items-center gap-1 py-2 active:scale-95 transition-transform"
+                        >
+                            <div className={`p-1.5 rounded-xl transition-colors ${isActive ? 'bg-primary/10 text-primary' : 'text-text-muted hover:bg-slate-100'}`}>
+                                <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                            </div>
+                            <span className={`text-[10px] font-medium transition-colors ${isActive ? 'text-primary' : 'text-text-muted'}`}>
+                                {tab.label}
+                            </span>
+                        </button>
+                    );
+                })}
             </div>
         </div>
     );
